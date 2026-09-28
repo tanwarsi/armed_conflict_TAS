@@ -50,6 +50,10 @@ The R code chunk below includes the R packages required to knit this document. T
 ```{r}
 #| echo: FALSE
 #| output: false
+install.packages("yaml")
+install.packages("knitr")
+install.packages("rmarkdown")
+
 library(tidyverse)
 library(knitr)
 library(kableExtra)
