@@ -99,7 +99,7 @@ conflict <-conflict |>
 
 library(purrr)
 
-#merge all data
+#merge all  data
 merged<- list(
   conflict,
   disaster,
