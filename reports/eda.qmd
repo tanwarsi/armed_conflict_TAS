@@ -110,28 +110,56 @@ comparison
 # I could also use graphs to map the distribution of variables with a logarithmic transformation of the y-values where appropriate. 
 ```{r}
 #| label: Distribution of maternal_mortality and under5_mortality
+
+#Maternal mortality by country
 final_data|>
-    group_by(iso, year) |>
   ggplot() +
   geom_point(
     aes(
       x = iso,
-      y = maternal_mortality,
-    )
-  ) 
+      y = maternal_mortality,)) +
+  labs(
+    title    = "Country ISO and Maternal Mortality (Ratio Per 1000)",
+    x        = "Country ISO",
+    y        = "Mortality (Ratio Per 1000)",
+  )
 
-
-  final_data|>
+#distribution of maternal mortality
+final_data|>
   ggplot() +
   geom_boxplot(
     aes(
       y = maternal_mortality,
     )
   ) 
+#distribution of infant mortality ratio
+final_data|>
+  ggplot() +
+  geom_boxplot(
+    aes(
+      y = infant_mortality,
+    )
+  )
+  #distribution of neonatal mortality ratio
+final_data|>
+  ggplot() +
+  geom_boxplot(
+    aes(
+      y = neonatal_mortality,
+    )
+  )
 
+  #distribution of under 5 mortality ratio
+final_data|>
+  ggplot() +
+  geom_boxplot(
+    aes(
+      y = under5_mortality,
+    )
+  )
 #There are a couple of outliers with maternal mortality values> 1750 per 1000
   final_data|>
-    filter(maternal_mortality>1750) |>
+    filter(maternal_mortality>1750)
     
 #SLE (Sierra Lione) has a high maternal mortality rate from 2000-2005
 ```
