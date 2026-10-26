@@ -118,46 +118,64 @@ comparison
 ```{r}
 #| label: Distribution of maternal_mortality and under5_mortality
 
-#note: no categorical (non-binary) variables, so a histogram was not used nor a logarithmic transformation of the y-axis
-
 #distribution of maternal mortality
-final_data|>
-  ggplot() +
-  geom_boxplot(
-    aes(
-      y = maternal_mortality,
-    )
-  ) 
+final_data |>
+  ggplot(aes(x = maternal_mortality)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Maternal mortality Ratio (Per 1000)",
+    y = "Number of Countries"
+  )
+
+  final_data |>#log tranformation
+  ggplot(aes(x = maternal_mortality)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Maternal mortality Ratio",
+    y = "Number of countries"
+  ) +
+  scale_y_log10()
+
 #distribution of infant mortality ratio
-final_data|>
-  ggplot() +
-  geom_boxplot(
-    aes(
-      y = infant_mortality,
-    )
+final_data |>
+  ggplot(aes(x = infant_mortality)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Infant mortality Ratio (Per 1000)",
+    y = "Number of Countries"
   )
-  #distribution of neonatal mortality ratio
-final_data|>
-  ggplot() +
-  geom_boxplot(
-    aes(
-      y = neonatal_mortality,
-    )
-  )
+
+ 
+#distribution of neonatal mortality ratio
+final_data |>
+  ggplot(aes(x = neonatal_mortality)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Neonatal mortality Ratio (Per 1000)",
+    y = "Number of Countries"
+  ) 
 
 #distribution of under 5 mortality ratio
-final_data|>
-  ggplot() +
-  geom_boxplot(
-    aes(
-      y = under5_mortality,
-    )
+final_data |>
+  ggplot(aes(x = under5_mortality)) +
+  geom_histogram(binwidth = 10) +
+  theme_classic() +
+  labs(
+    x = "Under 5 mortality Ratio (Per 1000)",
+    y = "Number of Countries"
   )
+
+
 #There are a couple of outliers with maternal mortality values> 1750 per 1000
-  final_data|>
-    filter(maternal_mortality>1750)
+final_data|>
+    filter(maternal_mortality>1750)|>
+      select(iso, maternal_mortality, year)
     
-#SLE (Sierra Lione) has a high maternal mortality rate from 2000-2005
+#SLE (Sierra Lione) has a high maternal mortality rate from 2000-2005 there likely was a long-lasting conflict during that time period. Should read more on this to confirm
 
 #distribution of armed conflict
 final_data|>
@@ -186,18 +204,21 @@ final_data|>
 
 # This may help identify outliers, which I could explore further for patterns with other variables.
 ```{r}
-#| label: looking at maternal mortality and armed conflictt
+#| label: looking at maternal mortality and armed conflict
+#Looking at armed conflict and maternal mortality together
  ggplot(final_data, aes(x = factor(armed_conflict), y = maternal_mortality)) +
   geom_boxplot() +
   labs(
     x = "Armed conflict (0 = no, 1 = yes)",
-    y = "Maternal mortality"
+    y = "Maternal mortality (Per 1000)"
   )
+#The presence of armed conflict seems associated with the highest recorded maternal maortality ratio in this data set
 ```
 
 # I could look at the variable types using the table() function and see where expected variable types do not match. 
 ```{r}
-#| label: variable types
+#| label: variable type
+#Note: opted not to use the table function, instead directly used class() 
 final_data |>
   summarise(
     across(everything(), ~ paste(class(.x), collapse = ", "))
@@ -215,7 +236,7 @@ final_data |>
 #| label: missing data observations
 get_dupes(final_data)#checking for duplicate data
 
-final_data |>
+final_data |>#look at degree of missingness for each variable
   summarise(
     across(everything(), ~ sum(is.na(.x)))
   ) |>
@@ -226,11 +247,6 @@ final_data |>
   ) |>
   mutate(percent_missing = 100 * n_missing / nrow(final_data)) |>
   arrange(desc(n_missing))
-
-#the same amount of missing values for drought and earthquake- worth investigating
-final_data|>
-  tabyl(drought, earthquake,  show_na = TRUE) 
-#earthquake and drought seem to be missing together
 
 #the same amount of missing values for drought and earthquake- worth investigating
 final_data|>
