@@ -1,0 +1,136 @@
+---
+title: "Comparison of Final Analysis Data Sets"
+format: html
+execute:
+  echo: true
+  warning: false
+execute-dir: project
+---
+
+## Purpose
+
+This report compares the original `final_data.csv` with
+`final_data_codex.csv`. Both files are read from `data/processed/` and are
+compared on their structure, country-year coverage, and shared variables.
+
+```{r}
+#| label: setup
+library(dplyr)
+library(readr)
+library(tidyr)
+
+original_data <- read_csv("data/processed/final_data.csv", show_col_types = FALSE)
+codex_data <- read_csv("data/processed/final_data_codex.csv", show_col_types = FALSE)
+
+key_columns <- c("iso", "year")
+```
+
+## Data-set overview
+
+The table below reports the number of rows, columns, and distinct country-year
+observations in each file. A duplicate count of zero means that every row has a
+unique `iso`-`year` combination.
+
+```{r}
+#| label: overview
+overview <- bind_rows(
+  original_data |> summarise(
+    dataset = "final_data.csv",
+    rows = n(),
+    columns = ncol(original_data),
+    unique_country_years = n_distinct(pick(all_of(key_columns))),
+    duplicate_country_years = n() - n_distinct(pick(all_of(key_columns)))
+  ),
+  codex_data |> summarise(
+    dataset = "final_data_codex.csv",
+    rows = n(),
+    columns = ncol(codex_data),
+    unique_country_years = n_distinct(pick(all_of(key_columns))),
+    duplicate_country_years = n() - n_distinct(pick(all_of(key_columns)))
+  )
+)
+
+overview
+```
+
+## Variables present in each file
+
+```{r}
+#| label: variable-comparison
+variable_comparison <- tibble(
+  variable = union(names(original_data), names(codex_data)),
+  in_final_data = variable %in% names(original_data),
+  in_final_data_codex = variable %in% names(codex_data)
+) |> arrange(variable)
+
+variable_comparison
+```
+
+The original file retains `best` (the total battle-related deaths) and
+`defined_conflict`; the Codex file instead retains the binary
+`armed_conflict` variable. The remaining variables should be shared.
+
+## Country-year coverage
+
+```{r}
+#| label: country-year-coverage
+original_keys <- original_data |> distinct(across(all_of(key_columns)))
+codex_keys <- codex_data |> distinct(across(all_of(key_columns)))
+
+coverage_comparison <- tibble(
+  comparison = c(
+    "Country-years only in final_data.csv",
+    "Country-years only in final_data_codex.csv",
+    "Country-years in both files"
+  ),
+  n_country_years = c(
+    nrow(anti_join(original_keys, codex_keys, by = key_columns)),
+    nrow(anti_join(codex_keys, original_keys, by = key_columns)),
+    nrow(inner_join(original_keys, codex_keys, by = key_columns))
+  )
+)
+
+coverage_comparison
+```
+
+## Shared-variable values
+
+For every variable found in both files, the next table counts matching and
+non-matching values among country-years present in both files. Two missing
+values are treated as a match.
+
+```{r}
+#| label: shared-values
+shared_value_columns <- setdiff(
+  intersect(names(original_data), names(codex_data)),
+  key_columns
+)
+
+joined_data <- inner_join(
+  original_data |> select(all_of(c(key_columns, shared_value_columns))),
+  codex_data |> select(all_of(c(key_columns, shared_value_columns))),
+  by = key_columns,
+  suffix = c("_original", "_codex")
+)
+
+value_comparison <- lapply(shared_value_columns, function(variable) {
+  original_value <- joined_data[[paste0(variable, "_original")]]
+  codex_value <- joined_data[[paste0(variable, "_codex")]]
+  matches <- (is.na(original_value) & is.na(codex_value)) |
+    (!is.na(original_value) & !is.na(codex_value) & original_value == codex_value)
+
+  tibble(
+    variable = variable,
+    matching_values = sum(matches),
+    differing_values = sum(!matches)
+  )
+}) |> bind_rows() |> arrange(desc(differing_values), variable)
+
+value_comparison
+```
+
+## Conclusion
+
+Use `final_data_codex.csv` when the desired exposure is the explicitly named
+binary `armed_conflict` variable. This report can be re-rendered whenever
+either CSV is regenerated, so its tables will update automatically.
