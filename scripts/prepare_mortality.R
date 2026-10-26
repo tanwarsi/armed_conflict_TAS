@@ -95,21 +95,27 @@ conflict <-conflict |>
   conflict <-conflict |>
     mutate(year=year+1)
 
+
+############################ADDING COVARIATES####################
+#reading in the file
+covariates <-read.csv("./data/raw/covariates.csv", header = TRUE)
+
+
 ###########################MERGE DATA###############################
 
-library(purrr)
-
-#merge all  data
 merged<- list(
   conflict,
   disaster,
   matmor_long,
   infantmor_long,
   neomor_long,
-  under5mor_long) |>
+  under5mor_long,
+  disaster,
+ conflict,
+ covariates )|>
     reduce(full_join, by = c("iso", "year")
 )
 
 #write into CSV
-write_csv(merged, "./data/processed/final_data.csv")
 
+write_csv(merged, "./data/processed/final_data.csv")
