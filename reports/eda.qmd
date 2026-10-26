@@ -12,6 +12,7 @@ library(dplyr)
 library(readr)
 library(tidyr)
 library(ggplot2)
+library(janitor)
 ```
 
 # The first thing I would explore is the distribution and types of variables. I can begin by simply looking at the data with head() or glimpse(). 
@@ -32,42 +33,154 @@ final_data |>
     summary()
 ```
 
-# To get a better understanding of the limits of these summary statistics, I could randomly remove values of the statistic for certain countries and then see how the summary statistics change depending on the group of countries with missing data. 
+# To get a better understanding of the limits of these summary statistics, I could randomly remove values of the statistic for certain country-years and then see how the summary statistics change depending on the group of country-years with missing data. 
 ```{r}
 #| label: limits of. summary stats
-sample_means <- tibble(seed = c(), mean = c(), states_ignored = c())
+set.seed(123)
 
-for (i in c(1:5)) {
-  set.seed(i)
-  dont_get <- c(sample(x = state.name, size = 5))
-  sample_means <-
-    sample_means |>
-    rbind(tibble(
-      seed = i,
-      mean =
-        us_populations |>
-          filter(!state %in% dont_get) |>
-          summarise(mean = mean(population)) |>
-          pull(),
-      states_ignored = str_c(dont_get, collapse = ", ")
-    ))
+# Choose the statistic to test and the percentage removed in each simulation.
+outcome <- "maternal_mortality"
+removal_proportion <- 0.20
+
+# Restrict selection to country-years with an observed outcome value.
+available_country_years <- final_data |>
+  filter(!is.na(.data[[outcome]])) |>
+  distinct(iso, year)
+
+n_to_remove <- floor(nrow(available_country_years) * removal_proportion)
+
+# Draw two different, non-overlapping sets of country-year observations.
+removed_set_1 <- available_country_years |>
+  slice_sample(n = n_to_remove) |>
+  mutate(removal_set = "Set 1")
+
+removed_set_2 <- available_country_years |>
+  anti_join(removed_set_1, by = c("iso", "year")) |>
+  slice_sample(n = n_to_remove) |>
+  mutate(removal_set = "Set 2")
+
+removed_country_years <- bind_rows(removed_set_1, removed_set_2) |>
+  arrange(removal_set, iso, year)
+
+# Display exactly which country-years are removed in each simulation.
+removed_country_years
+
+remove_country_years <- function(data, removal_set, outcome) {
+  data |>
+    left_join(
+      removal_set |>
+        select(iso, year) |>
+        mutate(remove_value = TRUE),
+      by = c("iso", "year")
+    ) |>
+    mutate(
+      simulated_value = if_else(
+        coalesce(remove_value, FALSE),
+        NA_real_,
+        .data[[outcome]]
+      )
+    ) |>
+    select(-remove_value)
 }
 
-sample_means |>
-  tt() |> 
-  style_tt(j = 1:3, align = "lrr") |> 
-  format_tt(digits = 0, num_mark_big = ",", num_fmt = "decimal") |> 
-  setNames(c("Seed", "Mean", "Ignored states"))
+summarise_values <- function(data, value, scenario, n_removed) {
+  data |>
+    summarise(
+      scenario = scenario,
+      n_removed = n_removed,
+      n_observed = sum(!is.na(.data[[value]])),
+      mean = mean(.data[[value]], na.rm = TRUE),
+      median = median(.data[[value]], na.rm = TRUE),
+      sd = sd(.data[[value]], na.rm = TRUE)
+    )
+}
+
+simulated_set_1 <- remove_country_years(final_data, removed_set_1, outcome)
+simulated_set_2 <- remove_country_years(final_data, removed_set_2, outcome)
+
+comparison <- bind_rows(
+  summarise_values(final_data, outcome, "Original data", 0),
+  summarise_values(simulated_set_1, "simulated_value", "Set 1 removed", n_to_remove),
+  summarise_values(simulated_set_2, "simulated_value", "Set 2 removed", n_to_remove)
+)
+
+comparison
 ```
 
 # I could also use graphs to map the distribution of variables with a logarithmic transformation of the y-values where appropriate. 
+```{r}
+#| label: Distribution of maternal_mortality and under5_mortality
+final_data|>
+    group_by(iso, year) |>
+  ggplot() +
+  geom_point(
+    aes(
+      x = iso,
+      y = maternal_mortality,
+    )
+  ) 
+
+
+  final_data|>
+  ggplot() +
+  geom_boxplot(
+    aes(
+      y = maternal_mortality,
+    )
+  ) 
+
+#There are a couple of outliers with maternal mortality values> 1750 per 1000
+  final_data|>
+    filter(maternal_mortality>1750) |>
+    
+#SLE (Sierra Lione) has a high maternal mortality rate from 2000-2005
+```
 
 # This may help identify outliers, which I could explore further for patterns with other variables.
+```{r}
+#| label: looking at maternal mortality and armed conflictt
+ ggplot(final_data, aes(x = factor(armed_conflict), y = maternal_mortality)) +
+  geom_boxplot() +
+  labs(
+    x = "Armed conflict (0 = no, 1 = yes)",
+    y = "Maternal mortality"
+  )
+```
 
-# I could look at the variable types using the table() function and see where expected variable types do not match. Once I am done observing the kinds and distributions of the variables, I would explore the degree, extent, and kinds of missingness, as the preliminary glimpse into the data would reveal that there is quite a bit of missingness in the armed conflict data.
+# I could look at the variable types using the table() function and see where expected variable types do not match. 
+```{r}
+#| label: variable types
+final_data |>
+  summarise(
+    across(everything(), ~ paste(class(.x), collapse = ", "))
+  ) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "class"
+  )
+```
 
+# Once I am done observing the kinds and distributions of the variables, I would explore the degree, extent, and kinds of missingness, as the preliminary glimpse into the data would reveal that there is quite a bit of missingness in the armed conflict data.
 
+```{r}
+#| label: missing data observations
+get_dupes(final_data)#checking for duplicate data
 
+final_data |>
+  summarise(
+    across(everything(), ~ sum(is.na(.x)))
+  ) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "n_missing"
+  ) |>
+  mutate(percent_missing = 100 * n_missing / nrow(final_data)) |>
+  arrange(desc(n_missing))
 
-
+#the same amount of missing values for drought and earthquake- worth investigating
+final_data|>
+  tabyl(drought, earthquake,  show_na = TRUE) 
+#earthquake and drought seem to be missing together
 
