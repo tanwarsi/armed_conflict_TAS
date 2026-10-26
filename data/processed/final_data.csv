@@ -1,4 +1,4 @@
-iso,year,maternal_mortality,infant_mortality,neonatal_mortality,under5_mortality,drought,earthquake,best,armeed_conflict,gdp_1000,oecd,pop_dens,urban,age_dep,male_edu,temp,rainfall_1000
+iso,year,maternal_mortality,infant_mortality,neonatal_mortality,under5_mortality,drought,earthquake,best,armed_conflict,gdp_1000,oecd,pop_dens,urban,age_dep,male_edu,temp,rainfall_1000
 AFG,2000,1450,90.5,60.9,129.2,1,0,5065,1,NA,0,14.1365395,16.2532406,108.3466346,2.762085613,12.69959288,0.276370412
 AFG,2001,1390,87.9,59.7,125.2,0,1,5394,1,NA,0,14.2315583,16.256613,108.9898856,2.856935828,12.85570384,0.279307867
 AFG,2002,1300,85.3,58.5,121.1,0,1,5553,1,0.183532775,0,14.3227049,16.4265383,109.3471569,2.954240884,12.7108084,0.380570974

@@ -1,0 +1,73 @@
+---
+title: "Exploratory Data Analysis"
+format: html
+---
+
+
+
+
+```{r}
+#| label: libraries
+library(dplyr)
+library(readr)
+library(tidyr)
+library(ggplot2)
+```
+
+# The first thing I would explore is the distribution and types of variables. I can begin by simply looking at the data with head() or glimpse(). 
+```{r}
+#| label: looking at the data
+final_data <- read_csv(
+  here("data", "processed", "final_data.csv"),
+  show_col_types = FALSE
+)
+head(final_data)
+glimpse(final_data)
+```
+
+# Then I would generate summary statistics for numeric variables (such as maternal mortality  ratio, newborn mortality, etc.) using the summary() function. 
+```{r}
+#| label: summary stats
+final_data |> 
+    summary()
+```
+
+# To get a better understanding of the limits of these summary statistics, I could randomly remove values of the statistic for certain countries and then see how the summary statistics change depending on the group of countries with missing data. 
+```{r}
+#| label: limits of. summary stats
+sample_means <- tibble(seed = c(), mean = c(), states_ignored = c())
+
+for (i in c(1:5)) {
+  set.seed(i)
+  dont_get <- c(sample(x = state.name, size = 5))
+  sample_means <-
+    sample_means |>
+    rbind(tibble(
+      seed = i,
+      mean =
+        us_populations |>
+          filter(!state %in% dont_get) |>
+          summarise(mean = mean(population)) |>
+          pull(),
+      states_ignored = str_c(dont_get, collapse = ", ")
+    ))
+}
+
+sample_means |>
+  tt() |> 
+  style_tt(j = 1:3, align = "lrr") |> 
+  format_tt(digits = 0, num_mark_big = ",", num_fmt = "decimal") |> 
+  setNames(c("Seed", "Mean", "Ignored states"))
+```
+
+# I could also use graphs to map the distribution of variables with a logarithmic transformation of the y-values where appropriate. 
+
+# This may help identify outliers, which I could explore further for patterns with other variables.
+
+# I could look at the variable types using the table() function and see where expected variable types do not match. Once I am done observing the kinds and distributions of the variables, I would explore the degree, extent, and kinds of missingness, as the preliminary glimpse into the data would reveal that there is quite a bit of missingness in the armed conflict data.
+
+
+
+
+
+

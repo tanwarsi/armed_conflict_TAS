@@ -66,9 +66,9 @@ variable_comparison <- tibble(
 variable_comparison
 ```
 
-The original file retains `best` (the total battle-related deaths) and
-`defined_conflict`; the Codex file instead retains the binary
-`armed_conflict` variable. The remaining variables should be shared.
+Both files now contain the binary `armed_conflict` variable. The only
+additional field in `final_data.csv` is `best`, the total battle-related deaths
+used to construct that binary exposure.
 
 ## Country-year coverage
 
@@ -131,6 +131,8 @@ value_comparison
 
 ## Conclusion
 
-Use `final_data_codex.csv` when the desired exposure is the explicitly named
-binary `armed_conflict` variable. This report can be re-rendered whenever
-either CSV is regenerated, so its tables will update automatically.
+The files have the same country-year coverage and share the binary
+`armed_conflict` exposure. Use `final_data.csv` when the underlying
+battle-death total (`best`) is also needed; otherwise, either file contains the
+same shared analysis variables. This report can be re-rendered whenever either
+CSV is regenerated, so its tables will update automatically.
