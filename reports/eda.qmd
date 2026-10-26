@@ -11,7 +11,6 @@ format:
 
 
 
-
 ```{r}
 #| label: libraries
 library(dplyr)
@@ -252,3 +251,4 @@ final_data |>#look at degree of missingness for each variable
 final_data|>
   tabyl(drought, earthquake,  show_na = TRUE) 
 #earthquake and drought seem to be missing together
+```
