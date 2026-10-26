@@ -1,11 +1,13 @@
-#Set up
+############## PACKAGES #################################################
 library(tidyverse)
 library(janitor)
 library(here)
+
+############# FILE PATH SET UP ##########################################
 raw_data <- here("data", "raw")
 processed_data <- here("data", "processed")
 
-#################PREPARING WORLD BANK DATA###############################
+################# PREPARING WORLD BANK DATA ###############################
 
 #create a function that coverts to long format
 make_longer <- function(filename) {
@@ -28,7 +30,7 @@ under5mor_long<-make_longer("under5_mortality.csv")
 
 
 
-#################PREPARING DISASTER DATA###############################
+#################PREPARING DISASTER DATA###################################
 
 #read the file
 disaster_raw <- read.csv(
@@ -67,7 +69,7 @@ disaster <- disaster |>
   )|>
   select(iso, year, drought, earthquake)
 
-###########################PREPARING CONFLICT DATA###############################
+###########################PREPARING CONFLICT DATA#########################
 
 #reading in the file
 #conflict_raw <-read.csv("./data/raw/conflict.csv", header = TRUE)
@@ -89,21 +91,21 @@ conflict <- conflict_raw |>
 
 #defining conflict based on conditions above, 
 conflict <-conflict |>
-  mutate(defined_conflict= if_else(best<25, "no", "yes"))
+  mutate(defined_conflict= if_else(best<25, 0, 1))
 
 #expressing conflict as a lagged term
   conflict <-conflict |>
     mutate(year=year+1)
 
 
-############################ADDING COVARIATES####################
+############################ADDING COVARIATES##############################
 #reading in the file
 covariates <- read.csv(
   file.path(raw_data, "covariates.csv"),
   header = TRUE
 )
 
-###########################MERGE DATA###############################
+###########################MERGE DATA######################################
 
 merged<- list(
   matmor_long,
@@ -117,7 +119,8 @@ merged<- list(
 )
 
 #write into CSV
-#write_csv(merged, "./data/processed/final_data.csv")
+dir.create(processed_data, recursive = TRUE, showWarnings = FALSE)
+
 write_csv(
   merged,
   file.path(processed_data, "final_data.csv")
