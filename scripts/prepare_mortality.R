@@ -91,7 +91,7 @@ conflict <- conflict_raw |>
 
 #defining conflict based on conditions above, 
 conflict <-conflict |>
-  mutate(defined_conflict= if_else(best<25, 0, 1))
+  mutate(armeed_conflict= if_else(best<25, 0, 1))
 
 #expressing conflict as a lagged term
   conflict <-conflict |>
