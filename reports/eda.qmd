@@ -1,6 +1,12 @@
 ---
 title: "Exploratory Data Analysis"
-format: html
+author: "Tasnim Anwar-Siraj"
+format: 
+  pdf:
+    geometry:
+      - top=30mm
+      - left=20mm
+      - heightrounded
 ---
 
 
@@ -13,14 +19,14 @@ library(readr)
 library(tidyr)
 library(ggplot2)
 library(janitor)
+library(here)
 ```
 
 # The first thing I would explore is the distribution and types of variables. I can begin by simply looking at the data with head() or glimpse(). 
 ```{r}
 #| label: looking at the data
-final_data <- read_csv(
+final_data <- read.csv(
   here("data", "processed", "final_data.csv"),
-  show_col_types = FALSE
 )
 head(final_data)
 glimpse(final_data)
@@ -63,7 +69,8 @@ removed_country_years <- bind_rows(removed_set_1, removed_set_2) |>
   arrange(removal_set, iso, year)
 
 # Display exactly which country-years are removed in each simulation.
-removed_country_years
+removed_country_years |>
+  group_by(removal_set, iso) 
 
 remove_country_years <- function(data, removal_set, outcome) {
   data |>
@@ -111,18 +118,7 @@ comparison
 ```{r}
 #| label: Distribution of maternal_mortality and under5_mortality
 
-#Maternal mortality by country
-final_data|>
-  ggplot() +
-  geom_point(
-    aes(
-      x = iso,
-      y = maternal_mortality,)) +
-  labs(
-    title    = "Country ISO and Maternal Mortality (Ratio Per 1000)",
-    x        = "Country ISO",
-    y        = "Mortality (Ratio Per 1000)",
-  )
+#note: no categorical (non-binary) variables, so a histogram was not used nor a logarithmic transformation of the y-axis
 
 #distribution of maternal mortality
 final_data|>
@@ -149,7 +145,7 @@ final_data|>
     )
   )
 
-  #distribution of under 5 mortality ratio
+#distribution of under 5 mortality ratio
 final_data|>
   ggplot() +
   geom_boxplot(
@@ -162,6 +158,30 @@ final_data|>
     filter(maternal_mortality>1750)
     
 #SLE (Sierra Lione) has a high maternal mortality rate from 2000-2005
+
+#distribution of armed conflict
+final_data|>
+  ggplot() +
+    geom_bar(aes(
+        x=factor(armed_conflict)
+    )) +
+    labs(x = "Armed Conflict", y = "Count")
+
+#drought
+  final_data|>
+  ggplot() +
+    geom_bar(aes(
+        x=factor(drought)
+    )) +
+    labs(x = "Drought", y = "Count")
+
+#earthquake
+  final_data|>
+  ggplot() +
+    geom_bar(aes(
+        x=factor(earthquake)
+    )) +
+    labs(x = "Earthquake", y = "Count")
 ```
 
 # This may help identify outliers, which I could explore further for patterns with other variables.
@@ -212,3 +232,7 @@ final_data|>
   tabyl(drought, earthquake,  show_na = TRUE) 
 #earthquake and drought seem to be missing together
 
+#the same amount of missing values for drought and earthquake- worth investigating
+final_data|>
+  tabyl(drought, earthquake,  show_na = TRUE) 
+#earthquake and drought seem to be missing together
