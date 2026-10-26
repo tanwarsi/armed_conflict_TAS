@@ -1,10 +1,9 @@
 ---
 title: "Comparison of Final Analysis Data Sets"
-format: html
+format: pdf
 execute:
   echo: true
   warning: false
-execute-dir: project
 ---
 
 ## Purpose
@@ -19,8 +18,8 @@ library(dplyr)
 library(readr)
 library(tidyr)
 
-original_data <- read_csv("data/processed/final_data.csv", show_col_types = FALSE)
-codex_data <- read_csv("data/processed/final_data_codex.csv", show_col_types = FALSE)
+original_data <- read_csv("../data/processed/final_data.csv", show_col_types = FALSE)
+codex_data <- read_csv("../data/processed/final_data_codex.csv", show_col_types = FALSE)
 
 key_columns <- c("iso", "year")
 ```
