@@ -104,18 +104,15 @@ covariates <-read.csv("./data/raw/covariates.csv", header = TRUE)
 ###########################MERGE DATA###############################
 
 merged<- list(
-  conflict,
-  disaster,
   matmor_long,
   infantmor_long,
   neomor_long,
   under5mor_long,
   disaster,
- conflict,
- covariates )|>
+  conflict,
+  covariates )|>
     reduce(full_join, by = c("iso", "year")
 )
 
 #write into CSV
-
 write_csv(merged, "./data/processed/final_data.csv")
