@@ -123,7 +123,7 @@ final_data |>
   geom_histogram(binwidth = 10) +
   theme_classic() +
   labs(
-    x = "Maternal mortality Ratio (Per 1000)",
+    x = "Maternal mortality Ratio (National Estimate, Per 100 000 Live Births)",
     y = "Number of Countries"
   )
 
@@ -143,7 +143,7 @@ final_data |>
   geom_histogram(binwidth = 10) +
   theme_classic() +
   labs(
-    x = "Infant mortality Ratio (Per 1000)",
+    x = "Infant mortality Ratio (Per 1000 Live Births)",
     y = "Number of Countries"
   )
 
@@ -154,7 +154,7 @@ final_data |>
   geom_histogram(binwidth = 10) +
   theme_classic() +
   labs(
-    x = "Neonatal mortality Ratio (Per 1000)",
+    x = "Neonatal mortality Ratio (Per 1000 Live Births)",
     y = "Number of Countries"
   ) 
 
@@ -164,12 +164,12 @@ final_data |>
   geom_histogram(binwidth = 10) +
   theme_classic() +
   labs(
-    x = "Under 5 mortality Ratio (Per 1000)",
+    x = "Under 5 mortality Ratio (Per 1000 Live Births)",
     y = "Number of Countries"
   )
 
 
-#There are a couple of outliers with maternal mortality values> 1750 per 1000
+#There are a couple of outliers with maternal mortality values> 1750 per 100 000 live births
 final_data|>
     filter(maternal_mortality>1750)|>
       select(iso, maternal_mortality, year)
@@ -209,7 +209,7 @@ final_data|>
   geom_boxplot() +
   labs(
     x = "Armed conflict (0 = no, 1 = yes)",
-    y = "Maternal mortality (Per 1000)"
+    y = "Maternal Mortality Ratio (Estimate Per 100 000 Live Births)"
   )
 #The presence of armed conflict seems associated with the highest recorded maternal maortality ratio in this data set
 ```
