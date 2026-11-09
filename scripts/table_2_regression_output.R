@@ -61,14 +61,22 @@ table_2 <- modelsummary(
                 gof_omit = ".*",
                 statistic = "conf.int",
                 conf_level = 0.95,
-                title = "Table 2. The association between armed conflict and maternal and child mortality (95% CI) ",
-                notes = "Each column is the output from a panel regression with fixed effects (country and year as fixed effects) with the presence of armed conflict as the main predictor, adjusted for the covariates shown. Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent variable for continuous covariates and a change from yes to no for binary covaraites",
+                stars = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
+                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
+                notes = "Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
+                examining the association between the presence of armed conflict (main predictor) and the dependent variable, adjusted for the covariates shown. 
+                Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent 
+                variable for continuous covariates and a change from yes to no for binary covariates. 
+                GDP per capita is in current US dollars, and its unit is scaled up by 1,000. Population
+                density represents the percentage of the population living in a density of >1,000 people/km2. 
+                 Urban residence represents the percentage of the population living in urban areas. The age 
+                 dependency ratio represents the proportion of dependents (aged under 15 years or over 64 years) 
+                 per 100 working-age individuals. Male education is 
+                 expressed as years per capita and is age-standardised. Temperature is in degrees Celsius and 
+                 is the mean population-weighted annual temperature. Rainfall is the mean population weighted
+                annual rainfall in millimetres per year, scaled down by 1,000. Earthquake and drought are 
+                binary variables representing their absence or presence. All armed conflict variables were 
+                lagged by 1 year.",
                 output = here("output", "table_2.html")
 )
-plmmod <- plm(maternal_mortality ~ armed_conflict + gdp_1000 + oecd + pop_dens + urban +
-              age_dep + male_edu + temp + rainfall_1000 + earthquake + drought,
-              index = c("iso", "year"),
-              effect = "twoways",
-              model = "within",
-              data = final_data)
-plmmod
+table_2
