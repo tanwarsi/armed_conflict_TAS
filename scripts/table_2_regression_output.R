@@ -42,7 +42,7 @@ neomormod <- plm(update.formula(preds, neonatal_mortality ~ .),
                    effect = "twoways", 
                    model = "within",
                    data = final_data)
-neomormod
+#use model summary to generate the table
 table_2 <- modelsummary(
             list("Maternal Mortality" = maternal_mortalitymod,
                 "Neonatal Morality" = neomormod,
@@ -63,7 +63,10 @@ table_2 <- modelsummary(
                 conf_level = 0.95,
                 stars = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
                 title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
-                notes = "Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
+                notes = "
+                Data are given as adjusted beta coefficient (95% Confidence Interval). 
+                Standard errors (in parentheses) are model-based OLS standard errors.
+                Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
                 examining the association between the presence of armed conflict (main predictor) and the dependent variable, adjusted for the covariates shown. 
                 Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent 
                 variable for continuous covariates and a change from yes to no for binary covariates. 
