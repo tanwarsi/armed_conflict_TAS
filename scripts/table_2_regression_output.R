@@ -42,18 +42,29 @@ neomormod <- plm(update.formula(preds, neonatal_mortality ~ .),
                    effect = "twoways", 
                    model = "within",
                    data = final_data)
-
+neomormod
 table_2 <- modelsummary(
-                         list("Maternal Mortality" = maternal_mortalitymod,
-                              "Neonatal Morality" = neomormod,
-                             "Under 5 Mortality" = un5mormod ,
-                             "Infant Mortality" = infmormod ),
-                               coef_map = c("armed_conflict" = "Armed conflict (Present)"),
-                             gof_omit = ".*",
-                             title = "Table 2. The association between armed conflict and maternal and child mortality (standard errors) ",
-                             notes = "Each column is the output from a panel regression with fixed effects, adjusted for the covariates in the table in addition to year dummies (not shown). Coefficients are interpreted as the absolute change in the dependent variable following a change from the presence of armed conflict for a given country-year to no conflict",
-                             output = here("output", "table_2.html")
-                         )
+            list("Maternal Mortality" = maternal_mortalitymod,
+                "Neonatal Morality" = neomormod,
+                "Under Five Mortality" = un5mormod ,
+                "Infant Mortality" = infmormod ),
+                coef_map = c("armed_conflict" = "Armed conflict", 
+                            "logGDP" = "GDP per Capita",
+                            "oecd"= "OECD Member",
+                            "pop_dens"= "Population Density",
+                            "urban"= "Urban Residence",
+                            "age_dep"= "Age Dependency Ratio",
+                            "male_edu"= "Male Educution",
+                            "temp"= "Temperature",
+                            "rainfall_1000"="Rainfall"
+                          ),
+                gof_omit = ".*",
+                statistic = "conf.int",
+                conf_level = 0.95,
+                title = "Table 2. The association between armed conflict and maternal and child mortality (95% CI) ",
+                notes = "Each column is the output from a panel regression with fixed effects (country and year as fixed effects) with the presence of armed conflict as the main predictor, adjusted for the covariates shown. Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent variable for continuous covariates and a change from yes to no for binary covaraites",
+                output = here("output", "table_2.html")
+)
 plmmod <- plm(maternal_mortality ~ armed_conflict + gdp_1000 + oecd + pop_dens + urban +
               age_dep + male_edu + temp + rainfall_1000 + earthquake + drought,
               index = c("iso", "year"),
