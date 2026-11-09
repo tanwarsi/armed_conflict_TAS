@@ -15,9 +15,11 @@ final_data <- read.csv(
 
 # Preserve missing conflict status as an explicit stratum.
 table_data <- final_data
-table_data$armed_conflict <- addNA(factor(table_data$armed_conflict))
+table_data$armed_conflict <- factor(table_data$armed_conflict)
 levels(table_data$armed_conflict)[is.na(levels(table_data$armed_conflict))] <- "Missing"
-
+summary(table_data)
+table_data
+summary(final_data)
 # Set binary variables to readable labels.
 table_data$earthquake <- factor(
   table_data$earthquake,

@@ -89,7 +89,17 @@ armed_conflict_coeff <- modelsummary(
                             "Infant Mortality" = infmormod ),
                               coef_map = c("armed_conflict" = "Armed conflict"),
                             gof_omit = ".*",
-                            title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, standard errors) ",
+                            title = "Table 2. The association between armed conflict and maternal and child mortality (standard errors) ",
+                            notes = "",
+                            output = here("output", "table_2.html")
+                        )
+
+armed_conflict_coeff <- modelsummary(
+                        list("Maternal Mortality" = maternal_mortalitymod,
+                             "Neonatal Morality" = neomormod,
+                            "Under 5 Mortality" = un5mormod ,
+                            "Infant Mortality" = infmormod ),
+                            title = "Table 2. The association between armed conflict and maternal and child mortality (standard errors) ",
                             notes = "",
                             output = here("output", "table_2.html")
                         )
