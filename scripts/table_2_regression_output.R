@@ -3,6 +3,7 @@ library(here)
 library(plm)
 library(texreg)
 library(modelsummary)
+library(pagedown)
 
 #Load in final_data file
 processed_data <- here("data", "processed")
@@ -80,6 +81,11 @@ table_2 <- modelsummary(
                 annual rainfall in millimetres per year, scaled down by 1,000. Earthquake and drought are 
                 binary variables representing their absence or presence. All armed conflict variables were 
                 lagged by 1 year.",
-                output = here("output", "table_2.html")
+                output = here("output", "table_2.pdf")
 )
 table_2
+
+chrome_print(
+  input = here::here("output", "table_2.html"),
+  output = here::here("output", "table_2.pdf")
+)
