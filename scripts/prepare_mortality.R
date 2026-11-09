@@ -115,10 +115,8 @@ merged<- list(
   under5mor_long,
   disaster,
   conflict )|>
-    reduce(left_join, by = c("iso", "year")
-)
-merged
-
+    reduce(left_join, by = c("iso", "year")) |> mutate(
+    across(c(drought, earthquake, armed_conflict), ~ replace_na(.x, 0)))
 
 
 #write into CSV
