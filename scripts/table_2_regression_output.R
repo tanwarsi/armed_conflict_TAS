@@ -81,10 +81,10 @@ table_2 <- modelsummary(
                 annual rainfall in millimetres per year, scaled down by 1,000. Earthquake and drought are 
                 binary variables representing their absence or presence. All armed conflict variables were 
                 lagged by 1 year.",
-                output = here("output", "table_2.pdf")
+                output = here("output", "table_2.html")
 )
 table_2
-
+#Output as PDF
 chrome_print(
   input = here::here("output", "table_2.html"),
   output = here::here("output", "table_2.pdf")
