@@ -106,7 +106,7 @@ table_2_imp <- modelsummary(
                 statistic = "conf.int",
                 conf_level = 0.95,
                 stars = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
-                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
+                title = "Table 2. The Association Between Armed Conflict and Maternal and Child Mortality Using Complete Cases and Multiple Imputation, (adjusted beta coefficients, 95% confidence intervals) ",
                 notes = "
 
                 Data for complete case analysis are presented as adjusted beta coefficient (95% Confidence Intervals modelled-based OLS standard errors).
