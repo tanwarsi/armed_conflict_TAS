@@ -33,11 +33,12 @@ midata <- final_data |>
 mice0  <- mice(midata, seed = 100, m = 5, maxit = 0, print = F)
 
 #edit method and prediction matrix
+meth <- mice0$method
 meth[c("urban", "male_edu", "temp", "rainfall_1000", "logGDP", "pop_dens",
        "maternal_mortality", "infant_mortality", "neonatal_mortality",
         "under5_mortality")] <- "2l.lmer" #change imputation method
 meth <- mice0$method
-
+pred <- mice0$predictorMatrix
 pred[c("urban", "male_edu", "temp", "rainfall_1000", "logGDP", "pop_dens",
        "maternal_mortality", "infant_mortality", "neonatal_mortality", 
        "under5_mortality"), "iso_num"]<- -2 #--> treat iso_num as a class variable, specify which values are imputed
@@ -68,7 +69,7 @@ fit.mi.under5mor  <- with(mice.multi.out,
                            age_dep + male_edu + temp + rainfall_1000 + earthquake + drought + 
                            as.factor(iso_num) + as.factor(year)))
 fit.mi.neonatalmor <- with(mice.multi.out, 
-                      lm(maternal_mortality ~ -1 + armed_conflict + logGDP + oecd + pop_dens + urban + 
+                      lm(neonatal_mortality ~ -1 + armed_conflict + logGDP + oecd + pop_dens + urban + 
                            age_dep + male_edu + temp + rainfall_1000 + earthquake + drought + 
                            as.factor(iso_num) + as.factor(year)))
 
@@ -81,11 +82,11 @@ out.mi.neonatalmor <- pool(fit.mi.neonatalmor)
 summary(out.mi.matmor) #summary() function will produce a table with estimates, standard errors, etc.
 
 ##### use model summary to generate the table
-table_2 <- modelsummary(
-            list("Maternal Mortality" = maternal_mortalitymod,
-                "Neonatal Morality" = neomormod,
-                "Under Five Mortality" = un5mormod ,
-                "Infant Mortality" = infmormod ),
+table_2_imp <- modelsummary(
+            list("Maternal Mortality" = out.mi.matmor,
+                "Neonatal Morality" = out.mi.neonatalmor ,
+                "Under Five Mortality" = out.mi.under5mor ,
+                "Infant Mortality" = out.mi.infantmor),
                 coef_map = c("armed_conflict" = "Armed conflict", 
                             "logGDP" = "GDP per Capita",
                             "oecd"= "OECD Member",
@@ -100,31 +101,35 @@ table_2 <- modelsummary(
                 statistic = "conf.int",
                 conf_level = 0.95,
                 stars = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
-                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
+                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals, modelled on imputed data) ",
                 notes = "
-                Data are given as adjusted beta coefficient (95% Confidence Interval). 
-                Standard errors (in parentheses) are model-based OLS standard errors.
-                Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
-                examining the association between the presence of armed conflict (main predictor) and the dependent variable, adjusted for the covariates shown. 
+                
+                Data are presented as pooled adjusted beta coefficients with 95% confidence intervals, 
+                estimated using multiple imputation and pooled with Rubin’s rules. Each model is a linear
+                regression with country and year fixed effects, examining the association between the presence of armed conflict (main predictor)
+                and the dependent variable, adjusted for the covariates shown. 
+                
                 Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent 
                 variable for continuous covariates and a change from yes to no for binary covariates. 
                 GDP per capita is in current US dollars, and its unit is scaled up by 1,000. Population
                 density represents the percentage of the population living in a density of >1,000 people/km2. 
-                 Urban residence represents the percentage of the population living in urban areas. The age 
-                 dependency ratio represents the proportion of dependents (aged under 15 years or over 64 years) 
+                
+                Urban residence represents the percentage of the population living in urban areas. The age 
+                dependency ratio represents the proportion of dependents (aged under 15 years or over 64 years) 
                  per 100 working-age individuals. Male education is 
                  expressed as years per capita and is age-standardised. Temperature is in degrees Celsius and 
                  is the mean population-weighted annual temperature. Rainfall is the mean population weighted
                 annual rainfall in millimetres per year, scaled down by 1,000. Earthquake and drought are 
                 binary variables representing their absence or presence. All armed conflict variables were 
                 lagged by 1 year.",
-                output = here("output", "table_2.html")
+                output = here("output", "table_2_imputed.html")
 )
-table_2
+table_2_imp
+
 #Output as PDF
 chrome_print(
-  input = here::here("output", "table_2.html"),
-  output = here::here("output", "table_2.pdf")
+  input = here::here("output", "table_2_imp.html"),
+  output = here::here("output", "table_2_imp.pdf")
 )
 
 
