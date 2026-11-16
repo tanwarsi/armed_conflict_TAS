@@ -84,14 +84,14 @@ summary(out.mi.matmor) #summary() function will produce a table with estimates, 
 
 ##### use model summary to generate the table
 table_2_imp <- modelsummary(
-            list("Maternal Mortality" = out.mi.matmor,
-                "Neonatal Morality" = out.mi.neonatalmor ,
-                "Under Five Mortality" = out.mi.under5mor ,
-                "Infant Mortality" = out.mi.infantmor,
-                "Maternal Mortality (Complete Case)" = maternal_mortalitymod,
-                "Neonatal Morality (Complete Case)" = neomormod,
-                "Under Five Mortality (Complete Case)" = un5mormod ,
-                "Infant Mortality (Complete Case)" = infmormod),
+            list("Maternal Mortality Ratio per 100,000 live births" = out.mi.matmor,
+                 "Maternal Mortality Ratio per 100,000 live births (Complete Case)" = maternal_mortalitymod,
+                "Neonatal Morality Rate per 1,000 live births" = out.mi.neonatalmor ,
+                "Neonatal Morality Rate per 1,000 live births (Complete Case)" = neomormod,
+                "Under Five Mortality Rate per 1,000 live births" = out.mi.under5mor ,
+                "Under Five Mortality Rate per 1,000 live births (Complete Case)" = un5mormod ,
+                "Infant Mortality Rate per 1,000 live births" = out.mi.infantmor,
+                "Infant Mortality Rate per 1,000 live births (Complete Case)" = infmormod),
                 coef_map = c("armed_conflict" = "Armed conflict", 
                             "logGDP" = "GDP per Capita",
                             "oecd"= "OECD Member",
@@ -109,17 +109,16 @@ table_2_imp <- modelsummary(
                 title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
                 notes = "
 
-                Data for complete case analysis are presented as adjusted beta coefficient (95% Confidence Interval). 
-                Standard errors (in parentheses) are model-based OLS standard errors.
+                Data for complete case analysis are presented as adjusted beta coefficient (95% Confidence Intervals modelled-based OLS standard errors).
                 Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
                 examining the association between the presence of armed conflict (main predictor) and the dependent variable, adjusted for the covariates shown. 
                 
-                Data from imputed data analsyis are presented as pooled adjusted beta coefficients with 95% confidence intervals, 
+                Data from imputed data analysis are presented as pooled adjusted beta coefficients with 95% confidence intervals, 
                 estimated using multiple imputation and pooled with Rubin’s rules. Each model is a linear
                 regression with country and year fixed effects, examining the association between the presence of armed conflict (main predictor)
                 and the dependent variable, adjusted for the covariates shown. 
                 
-                Coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent 
+                For all models: coefficients are interpreted as the absolute change in the dependent variable following a 1- unit change in the independent 
                 variable for continuous covariates and a change from yes to no for binary covariates. 
                 GDP per capita is in current US dollars, and its unit is scaled up by 1,000. Population
                 density represents the percentage of the population living in a density of >1,000 people/km2. 
@@ -132,7 +131,7 @@ table_2_imp <- modelsummary(
                 annual rainfall in millimetres per year, scaled down by 1,000. Earthquake and drought are 
                 binary variables representing their absence or presence. All armed conflict variables were 
                 lagged by 1 year.",
-                output = here("output", "table_2_imputed.html")
+                output = here("output", "table_2_imp.html")
 )
 table_2_imp
 
