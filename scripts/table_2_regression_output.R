@@ -43,6 +43,13 @@ neomormod <- plm(update.formula(preds, neonatal_mortality ~ .),
                    effect = "twoways", 
                    model = "within",
                    data = final_data)
+
+#save outputs as R objects to use later
+save(
+  maternal_mortalitymod, neomormod, un5mormod, infmormod,
+  file = here("output", "table_2_complete_case_models.RData")
+)
+
 #use model summary to generate the table
 table_2 <- modelsummary(
             list("Maternal Mortality" = maternal_mortalitymod,

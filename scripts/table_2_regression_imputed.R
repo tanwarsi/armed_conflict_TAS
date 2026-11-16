@@ -7,11 +7,12 @@ library(pagedown)
 library(mice)
 library(naniar)
 
-##### Load in final_data file
+##### Load in final_data file and complete case analysis data
 processed_data <- here("data", "processed")
 final_data <- read.csv(
               file.path(processed_data, "final_data.csv"), 
               header = TRUE)
+load(here("output", "table_2_complete_case_models.RData"))
 
 ##### observe missingness
 summary(final_data)
@@ -86,7 +87,11 @@ table_2_imp <- modelsummary(
             list("Maternal Mortality" = out.mi.matmor,
                 "Neonatal Morality" = out.mi.neonatalmor ,
                 "Under Five Mortality" = out.mi.under5mor ,
-                "Infant Mortality" = out.mi.infantmor),
+                "Infant Mortality" = out.mi.infantmor,
+                "Maternal Mortality (Complete Case)" = maternal_mortalitymod,
+                "Neonatal Morality (Complete Case)" = neomormod,
+                "Under Five Mortality (Complete Case)" = un5mormod ,
+                "Infant Mortality (Complete Case)" = infmormod),
                 coef_map = c("armed_conflict" = "Armed conflict", 
                             "logGDP" = "GDP per Capita",
                             "oecd"= "OECD Member",
@@ -101,10 +106,15 @@ table_2_imp <- modelsummary(
                 statistic = "conf.int",
                 conf_level = 0.95,
                 stars = c('*' = 0.05, '**' = 0.01, '***' = 0.001),
-                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals, modelled on imputed data) ",
+                title = "Table 2. The association between armed conflict and maternal and child mortality (adjusted beta coefficients, 95% confidence intervals) ",
                 notes = "
+
+                Data for complete case analysis are presented as adjusted beta coefficient (95% Confidence Interval). 
+                Standard errors (in parentheses) are model-based OLS standard errors.
+                Each column is the output from a panel regression model with fixed effects (country and year as fixed effects) 
+                examining the association between the presence of armed conflict (main predictor) and the dependent variable, adjusted for the covariates shown. 
                 
-                Data are presented as pooled adjusted beta coefficients with 95% confidence intervals, 
+                Data from imputed data analsyis are presented as pooled adjusted beta coefficients with 95% confidence intervals, 
                 estimated using multiple imputation and pooled with Rubin’s rules. Each model is a linear
                 regression with country and year fixed effects, examining the association between the presence of armed conflict (main predictor)
                 and the dependent variable, adjusted for the covariates shown. 
